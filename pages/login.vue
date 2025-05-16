@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-[#FFDFD3] flex flex-col items-center justify-center p-4">
-    <div class="bg-[#FFF9F7] py-10 px-4 rounded-lg w-full max-w-xs text-center border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+    <div class="bg-[#FFF9F7] p-8 rounded-lg w-full max-w-xs text-center border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] h-">
 
       <h1 class="text-2xl font-black text-[#087E4C] uppercase mb-8">PRENUER'S DAY</h1>
 
