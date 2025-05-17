@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "c68187e4-4d3a-40cd-98fc-e42d3059b21c",
+		"name": "Entrepreneur",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "37837943"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{BASE_URL}}/api/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": "{{BASE_URL}}/api/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stamp",
+			"item": [
+				{
+					"name": "New Request",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{COMPANY_TOKEN}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": "{{BASE_URL}}/api/send/{{SISWA_ID}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name_company",
+							"value": "Nusantara spices",
+							"type": "text"
+						},
+						{
+							"key": "logo",
+							"type": "file",
+							"src": "/C:/Users/John Obama/Pictures/aswuuu/mpk-removebg-preview (2).png"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{BASE_URL}}/api/company/register"
+			},
+			"response": []
+		},
+		{
+			"name": "New Request Copy",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name_company",
+							"value": "Nusantara spices",
+							"type": "text"
+						},
+						{
+							"key": "logo",
+							"type": "file",
+							"src": "/C:/Users/John Obama/Pictures/aswuuu/mpk-removebg-preview (2).png"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{BASE_URL}}/api/company/register"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://127.0.0.1:8000/",
+			"type": "string"
+		},
+		{
+			"key": "SISWA_ID",
+			"value": "1|hfezWGDqc8jR5Y2dym6HgYpKKZ7A1sUwx8RSiSvNa6d4933b",
+			"type": "default"
+		},
+		{
+			"key": "COMPANY_ID",
+			"value": "company_681867afd2c90",
+			"type": "default"
+		},
+		{
+			"key": "COMPANY_TOKEN",
+			"value": "2|nuH437eYmv69Yzpvb9MI5V88d4qMq9JW8TxG0tX19c6b64fb",
+			"type": "default"
+		},
+		{
+			"key": "SISWA_TOKEN",
+			"value": "3|fq7d4eWQjiWIUM6JRwjghWieCoERf5IwxofsCz3u7965a392",
+			"type": "default"
+		}
+	]
+}

@@ -6,9 +6,15 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   // Vite plugins for Tailwind are managed by @nuxt/ui or a dedicated Tailwind module
 
-vite:{
-  server:{
-    allowedHosts: true,
+  vite:{
+    server:{
+      allowedHosts: true,
+    }
+  },
+
+  runtimeConfig: {
+    public: {
+      BASE_URL_API: process.env.BASE_URL_API,
+    }
   }
-}
 })
