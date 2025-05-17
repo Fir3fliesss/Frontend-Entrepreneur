@@ -60,15 +60,30 @@ const handleLogin = async () => {
       body: JSON.stringify(requestBody),
     });
 
-    const data = await response.json();
+    const responseData = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem('token', data.token);
+    if (response.ok && responseData.data && typeof responseData.data.siswa_id === 'string' && responseData.token) {
+      localStorage.setItem('token', responseData.token);
       localStorage.setItem('userType', 'student');
+      localStorage.setItem('siswa_id', responseData.data.siswa_id);
       router.push('/student-dashboard');
     } else {
-      console.error('Login failed:', data.message);
-      alert(`Login gagal: ${data.message || 'NIS salah, silahkan coba lagi'}`);
+      let errorMessage = 'Login gagal.';
+      if (!response.ok) {
+        errorMessage = `Login gagal: Server merespons dengan status ${response.status}.`;
+      } else if (responseData && responseData.message) {
+        errorMessage = `Login gagal: ${responseData.message}`;
+      } else if (!responseData.data) {
+        errorMessage = 'Login gagal: Format respons tidak sesuai (data utama tidak ditemukan).';
+      } else if (typeof responseData.data.siswa_id !== 'string') {
+        errorMessage = 'Login gagal: Format respons tidak sesuai (siswa_id tidak ditemukan atau bukan string).';
+      } else if (!responseData.token) {
+        errorMessage = 'Login gagal: Token tidak ditemukan dalam respons.';
+      } else {
+        errorMessage = 'Login gagal: NIS salah atau terjadi kesalahan tidak diketahui.';
+      }
+      console.error('Login failed:', errorMessage, responseData);
+      alert(errorMessage);
     }
   } catch (error) {
     console.error('An error occurred during login', error);

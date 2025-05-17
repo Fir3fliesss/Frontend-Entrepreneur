@@ -4,10 +4,8 @@
 
       <h1 class="text-2xl font-black text-[#087E4C] uppercase mb-8">PRENUER'S DAY</h1>
 
-      <!-- Welcome Message -->
-      <h2 class="text-xl font-bold text-black mb-4">Selamat Datang, [Nama Perusahaan]</h2>
+      <h2 class="text-xl font-bold text-black mb-4">Selamat Datang, <span class="text-[#087E4C]">{{ companyName }}</span></h2>
 
-      <!-- Scan QR Section -->
       <div class="mb-6">
         <button
           class="bg-[#98FFCF] hover:bg-green-400 text-black font-bold border-2 border-black rounded-lg py-3 px-6 text-lg w-full transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
@@ -15,13 +13,11 @@
         >
           Scan QR Code
         </button>
-        <!-- Placeholder for Camera Preview -->
         <div v-if="scanning" class="mt-4 border-2 border-black aspect-video flex items-center justify-center">
           <span class="text-gray-600">Camera Preview Area</span>
         </div>
       </div>
 
-      <!-- Confirmation Alert Placeholder -->
       <div v-if="showConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
         <div class="bg-white p-6 rounded-lg border-2 border-black text-center">
           <p class="mb-4 text-black">[Scan Result Confirmation Text]</p>
@@ -46,7 +42,6 @@
         <hr class="border-t-2 border-black">
       </div>
 
-      <!-- Logout Button -->
       <div class="mb-8">
         <button
           class="bg-red-400 hover:bg-red-500 text-black font-bold border-2 border-black rounded-lg py-3 px-6 text-lg w-full transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
@@ -63,36 +58,78 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+
+const config = useRuntimeConfig();
+const base_url = config.public.BASE_URL_API;
 
 const router = useRouter();
 const scanning = ref(false);
 const showConfirmation = ref(false);
+const companyName = ref('[Nama Perusahaan]');
 
 const startScan = () => {
   console.log('Start Scan button clicked');
   scanning.value = true;
-  // Logic to start camera and QR scan will go here
 };
 
 const cancelScan = () => {
   console.log('Cancel Scan button clicked');
   showConfirmation.value = false;
-  scanning.value = false; // Assuming cancelling also stops scanning
+  scanning.value = false;
 };
 
 const confirmScan = () => {
   console.log('Confirm Scan button clicked');
   showConfirmation.value = false;
-  scanning.value = false; // Assuming confirming also stops scanning
-  // Logic to process scan result will go here
+  scanning.value = false;
 };
+
+const fetchCompanyDetails = async () => {
+  const token = localStorage.getItem('token');
+  const companyId = localStorage.getItem('companyId');
+
+  if (!token || !companyId) {
+    console.error('Token atau Company ID tidak ditemukan di localStorage');
+    router.push('/login-company');
+    return;
+  }
+
+  const companyDetailEndpoint = `${base_url}/api/company/${companyId}`;
+
+  try {
+    const response = await fetch(companyDetailEndpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success && data.data) {
+      companyName.value = data.data.name_company;
+    } else {
+      console.error('Gagal mengambil detail perusahaan:', data.message || 'Response tidak sukses');
+      companyName.value = 'Perusahaan Tidak Ditemukan';
+    }
+  } catch (error) {
+    console.error('Terjadi kesalahan saat mengambil detail perusahaan:', error);
+    companyName.value = 'Error Memuat Data';
+  }
+};
+
+onMounted(() => {
+  fetchCompanyDetails();
+});
 
 const handleLogout = () => {
   console.log('Logout button clicked');
   localStorage.removeItem('token');
   localStorage.removeItem('userType');
+  localStorage.removeItem('companyId'); 
   router.push('/login-company');
 };
 
