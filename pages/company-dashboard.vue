@@ -4,10 +4,8 @@
 
       <h1 class="text-2xl font-black text-[#087E4C] uppercase mb-8">PRENUER'S DAY</h1>
 
-      <!-- Welcome Message -->
-      <h2 class="text-xl font-bold text-black mb-4">Selamat Datang, [Nama Perusahaan]</h2>
+      <h2 class="text-xl font-bold text-black mb-4">Selamat Datang, <span class="text-[#087E4C]">{{ companyName }}</span></h2>
 
-      <!-- Scan QR Section -->
       <div class="mb-6">
         <button
           class="bg-[#98FFCF] hover:bg-green-400 text-black font-bold border-2 border-black rounded-lg py-3 px-6 text-lg w-full transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
@@ -15,38 +13,12 @@
         >
           Scan QR Code
         </button>
-        <!-- Placeholder for Camera Preview -->
-        <div v-if="scanning" class="mt-4 border-2 border-black aspect-video flex items-center justify-center">
-          <span class="text-gray-600">Camera Preview Area</span>
-        </div>
-      </div>
-
-      <!-- Confirmation Alert Placeholder -->
-      <div v-if="showConfirmation" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-        <div class="bg-white p-6 rounded-lg border-2 border-black text-center">
-          <p class="mb-4 text-black">[Scan Result Confirmation Text]</p>
-          <div class="flex justify-center gap-4">
-            <button
-              class="bg-gray-300 hover:bg-gray-400 text-black font-bold border-2 border-black rounded-lg py-2 px-4 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-              @click="cancelScan"
-            >
-              Batal
-            </button>
-            <button
-              class="bg-[#98FFCF] hover:bg-green-400 text-black font-bold border-2 border-black rounded-lg py-2 px-4 transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-              @click="confirmScan"
-            >
-              Lanjut
-            </button>
-          </div>
-        </div>
       </div>
 
       <div class="mb-6">
         <hr class="border-t-2 border-black">
       </div>
 
-      <!-- Logout Button -->
       <div class="mb-8">
         <button
           class="bg-red-400 hover:bg-red-500 text-black font-bold border-2 border-black rounded-lg py-3 px-6 text-lg w-full transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
@@ -57,45 +29,116 @@
       </div>
 
       <p class="text-xs text-gray-800">Powered By <span class="font-bold text-[#5EB1FF]">Devaccto RPL</span></p>
-
     </div>
+
+    <!-- Popup Scan QR -->
+    <transition name="slide-up">
+      <div v-if="showScanPopup" class="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
+        <div class="bg-white w-full max-w-sm rounded-t-2xl p-6 border-t-4 border-[#087E4C] shadow-lg animate-slideUp relative min-h-[70vh]">
+          <button @click="closeScanPopup" class="absolute top-3 right-4 text-2xl font-bold text-gray-500 hover:text-black">&times;</button>
+          <h2 class="text-lg font-bold text-[#087E4C] mb-4">Scan QR Siswa</h2>
+          <div class="flex justify-center items-center min-h-[200px] relative">
+            <video ref="videoElem" class="rounded-lg border-2 border-black object-cover" autoplay playsinline width="350" height="350" style="aspect-ratio: 1 / 1; max-width: 90vw;"></video>
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[350px] h-[350px] pointer-events-none">
+              <div class="corner-outline tl"></div>
+              <div class="corner-outline tr"></div>
+              <div class="corner-outline bl"></div>
+              <div class="corner-outline br"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 
+const config = useRuntimeConfig();
+const base_url = config.public.BASE_URL_API;
+
 const router = useRouter();
-const scanning = ref(false);
-const showConfirmation = ref(false);
+const companyName = ref('[Nama Perusahaan]');
+const showScanPopup = ref(false);
+const videoElem = ref<HTMLVideoElement | null>(null);
+let qrScanner: any = null;
 
-const startScan = () => {
-  console.log('Start Scan button clicked');
-  scanning.value = true;
-  // Logic to start camera and QR scan will go here
+const startScan = async () => {
+  showScanPopup.value = true;
+  await nextTick();
+  if (!qrScanner && videoElem.value) {
+    const { default: QrScanner } = await import('qr-scanner');
+    qrScanner = new QrScanner(
+      videoElem.value,
+      (result: any) => {
+        alert('QR ditemukan: ' + (result.data || result));
+        closeScanPopup();
+      },
+      {
+        onDecodeError: (error: any) => {}
+      }
+    );
+  }
+  if (qrScanner) {
+    qrScanner.start();
+  }
 };
 
-const cancelScan = () => {
-  console.log('Cancel Scan button clicked');
-  showConfirmation.value = false;
-  scanning.value = false; // Assuming cancelling also stops scanning
+const closeScanPopup = () => {
+  showScanPopup.value = false;
+  if (qrScanner) {
+    qrScanner.stop();
+  }
 };
 
-const confirmScan = () => {
-  console.log('Confirm Scan button clicked');
-  showConfirmation.value = false;
-  scanning.value = false; // Assuming confirming also stops scanning
-  // Logic to process scan result will go here
+const fetchCompanyDetails = async () => {
+  const token = localStorage.getItem('token');
+  const companyId = localStorage.getItem('companyId');
+
+  if (!token || !companyId) {
+    console.error('Token atau Company ID tidak ditemukan di localStorage');
+    router.push('/login-company');
+    return;
+  }
+
+  const companyDetailEndpoint = `${base_url}/api/company/${companyId}`;
+
+  try {
+    const response = await fetch(companyDetailEndpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success && data.data) {
+      companyName.value = data.data.name_company;
+    } else {
+      console.error('Gagal mengambil detail perusahaan:', data.message || 'Response tidak sukses');
+      companyName.value = 'Perusahaan Tidak Ditemukan';
+    }
+  } catch (error) {
+    console.error('Terjadi kesalahan saat mengambil detail perusahaan:', error);
+    companyName.value = 'Error Memuat Data';
+  }
 };
+
+onMounted(() => {
+  fetchCompanyDetails();
+});
 
 const handleLogout = () => {
   console.log('Logout button clicked');
   localStorage.removeItem('token');
   localStorage.removeItem('userType');
-  router.push('/login-company');
+  localStorage.removeItem('companyId');
+  router.push('/');
 };
-
 </script>
 
 <style>
@@ -108,5 +151,46 @@ h1{
 
 body, input, button, p, h2, h3, h4, h5, h6, span, div {
   font-family: 'Poppins', sans-serif;
+}
+.slide-up-enter-active, .slide-up-leave-active {
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+}
+.slide-up-enter-from, .slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.slide-up-enter-to, .slide-up-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
+.corner-outline {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border: 0;
+}
+.corner-outline.tl {
+  top: 0; left: 0;
+  border-top: 5px solid #FFD600;
+  border-left: 5px solid #FFD600;
+  border-top-left-radius: 16px;
+}
+.corner-outline.tr {
+  top: 0; right: 0;
+  border-top: 5px solid #FFD600;
+  border-right: 5px solid #FFD600;
+  border-top-right-radius: 16px;
+}
+.corner-outline.bl {
+  bottom: 0; left: 0;
+  border-bottom: 5px solid #FFD600;
+  border-left: 5px solid #FFD600;
+  border-bottom-left-radius: 16px;
+}
+.corner-outline.br {
+  bottom: 0; right: 0;
+  border-bottom: 5px solid #FFD600;
+  border-right: 5px solid #FFD600;
+  border-bottom-right-radius: 16px;
 }
 </style>

@@ -72,11 +72,30 @@ const handleLogin = async () => {
 
     const data = await response.json();
 
-    if (response.ok) {
+    if (response.ok && data.data && data.data.company_id) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userType', 'company');
+      localStorage.setItem('companyId', data.data.company_id);
       router.push('/company-dashboard');
-    } else {
+    } else if (response.ok && data.company && data.company.company_id) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userType', 'company');
+      localStorage.setItem('companyId', data.company.company_id);
+      router.push('/company-dashboard');
+    } else if (response.ok && data.data && data.data.id) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userType', 'company');
+      localStorage.setItem('companyId', data.data.id);
+      router.push('/company-dashboard');
+    } else if (response.ok && data.id) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userType', 'company');
+      localStorage.setItem('companyId', data.id);
+      router.push('/company-dashboard');
+    }
+    else {
+      console.error('Login successful, but company_id not found in response:', data);
+      alert('Login berhasil, tetapi data perusahaan tidak lengkap. Silakan hubungi administrator.');
       console.error('Login failed:', data.message);
       alert(`Login gagal: ${data.message || 'Nama Perusahaan/Password salah, silahkan coba lagi'}`);
     }
