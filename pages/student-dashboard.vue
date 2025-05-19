@@ -9,7 +9,7 @@
       <div class="mb-6">
         <button
           class="bg-[#98FFCF] hover:bg-green-400 text-black font-bold border-2 border-black rounded-lg py-3 px-6 text-lg w-full transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
-          @click="generateQR"
+          @click="openQrPopup"
         >
           Generate QR Code
         </button>
@@ -49,11 +49,22 @@
       <p class="text-xs text-gray-800">Powered By <span class="font-bold text-[#5EB1FF]">Devaccto RPL</span></p>
 
     </div>
+
+    <!-- Popup QR Code -->
+    <transition name="slide-up">
+      <div v-if="showQrPopup" class="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
+        <div class="bg-white w-full max-w-sm rounded-t-2xl p-6 border-t-4 border-[#087E4C] shadow-lg animate-slideUp relative min-h-[70vh]">
+          <button @click="closeQrPopup" class="absolute top-3 right-4 text-2xl font-bold text-gray-500 hover:text-black">&times;</button>
+          <h2 class="text-lg font-bold text-[#087E4C] mb-4">QR Code Anda</h2>
+          <div id="qr-code-container" class="flex justify-center"></div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 
 const config = useRuntimeConfig();
@@ -63,8 +74,33 @@ const username = ref('Nama Siswa');
 const qrCode = ref('');
 const base_url = config.public.BASE_URL_API;
 
-const generateQR = () => {
-  console.log('Generate QR button clicked');
+const showQrPopup = ref(false);
+
+const generateQR = async () => {
+  const siswaId = localStorage.getItem('siswa_id') || '';
+  await nextTick();
+  const container = document.getElementById('qr-code-container');
+  if (container) {
+    container.innerHTML = '';
+    const { default: QrCreator } = await import('qr-creator');
+    QrCreator.render({
+      text: siswaId,
+      radius: 0.2,
+      ecLevel: 'H',
+      fill: '#087E4C',
+      background: null,
+      size: 300
+    }, container);
+  }
+};
+
+const openQrPopup = () => {
+  showQrPopup.value = true;
+  generateQR();
+};
+
+const closeQrPopup = () => {
+  showQrPopup.value = false;
 };
 
 const fetchStudentDetails = async () => {
@@ -116,10 +152,9 @@ const handleLogout = () => {
   console.log('Logout button clicked');
   localStorage.removeItem('token');
   localStorage.removeItem('userType');
-  localStorage.removeItem('siswa_id'); 
-  router.push('/login-student');
+  localStorage.removeItem('siswa_id');
+  router.push('/');
 };
-
 </script>
 
 <style>
@@ -132,5 +167,16 @@ h1{
 
 body, input, button, p, h2, h3, h4, h5, h6, span, div {
   font-family: 'Poppins', sans-serif;
+}
+.slide-up-enter-active, .slide-up-leave-active {
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+}
+.slide-up-enter-from, .slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.slide-up-enter-to, .slide-up-leave-from {
+  transform: translateY(0);
+  opacity: 1;
 }
 </style>

@@ -14,7 +14,7 @@
               Selamat Datang di
             </h1>
             <h2 class="text-5xl md:text-6xl font-black text-green-800 tracking-wider transform rotate-1 uppercase mt-2">
-              Preneur's Day <span class="bg-yellow-300 px-2 text-green-800">Batch 3</span>
+              Preneur's Day <span class="bg-yellow-300 px-2 text-green-800 text-nowrap">Batch 3</span>
             </h2>
             <div class="absolute -top-6 -left-6 transform rotate-[-25deg]">
               <div class="w-12 h-12 bg-yellow-300 border-2 border-green-700 rotate-45 shadow-[3px_3px_0px_0px_rgba(0,100,0,0.7)]"></div>
@@ -25,18 +25,18 @@
           </div>
 
           <p class="text-xl font-semibold text-green-600 mb-10 tracking-wide">
-            Ayo kumpulkan <span class="bg-green-200 px-1 rounded">stamp</span> sebanyak mungkin!
+            Ayo kumpulkan <span class="inline-block transform -rotate-5 bg-green-200 px-1 rounded">stamp</span> sebanyak mungkin!
           </p>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             <button
               @click="goToStudentLogin"
-              class="bg-[#A7F3D0] text-green-800 font-bold text-lg py-4 px-6 border-4 border-green-700 rounded-lg shadow-[6px_6px_0px_0px_rgba(0,100,0,0.7)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 ease-in-out transform active:scale-95 active:shadow-none uppercase tracking-wider">
+              class="bg-[#A7F3D0] text-black font-bold text-lg py-4 px-6 border-4 border-green-700 rounded-lg shadow-[6px_6px_0px_0px_rgba(0,100,0,0.7)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 ease-in-out transform active:scale-95 active:shadow-none uppercase tracking-wider">
               Login Student
             </button>
             <button
               @click="goToCompanyLogin"
-              class="bg-[#FFDAB9] text-green-800 font-bold text-lg py-4 px-6 border-4 border-green-700 rounded-lg shadow-[6px_6px_0px_0px_rgba(0,100,0,0.7)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 ease-in-out transform active:scale-95 active:shadow-none uppercase tracking-wider">
+              class="bg-[#FFDAB9] text-black font-bold text-lg py-4 px-6 border-4 border-green-700 rounded-lg shadow-[6px_6px_0px_0px_rgba(0,100,0,0.7)] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all duration-150 ease-in-out transform active:scale-95 active:shadow-none uppercase tracking-wider">
               Login Company
             </button>
           </div>
@@ -61,6 +61,7 @@
       </div>
     </div>
   </div>
+  <center class="opacity-20 text-center text-xs font-extralight text-green-600">Powered by <a href="instagram.com/synchronizeteams">SynchronizeTeams</a></center>
 </template>
 
 <script lang="ts" setup>
