@@ -35,16 +35,32 @@
     <transition name="slide-up">
       <div v-if="showScanPopup" class="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
         <div class="bg-white w-full max-w-sm rounded-t-2xl p-6 border-t-4 border-[#087E4C] shadow-lg animate-slideUp relative min-h-[70vh]">
+          <transition name="slide-right-top">
+            <div
+              v-if="showBuyerSlide"
+              class="fixed top-24 right-0 bg-[#FFF9F7] border-2 border-black rounded-xl px-6 py-3 flex flex-col items-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] z-50"
+              style="min-width: 220px;"
+            >
+              <p class="text-lg font-bold text-[#087E4C] mb-2">Konfirmasi pembelian</p>
+              <div class="flex flex-row justify-around w-full gap-4">
+                <button @click="closeBuyerSlide" class="bg-red-300 hover:bg-red-400 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  ✕
+                </button>
+                <button @click="closeBuyerSlide" class="bg-green-200 hover:bg-green-300 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  ✓
+                </button>
+              </div>
+            </div>
+          </transition>
           <button @click="closeScanPopup" class="absolute top-3 right-4 text-2xl font-bold text-gray-500 hover:text-black">&times;</button>
           <h2 class="text-lg font-bold text-[#087E4C] mb-4">Scan QR Siswa</h2>
           <div class="flex justify-center items-center min-h-[200px] relative">
             <video ref="videoElem" class="rounded-lg border-2 border-black object-cover" autoplay playsinline width="350" height="350" style="aspect-ratio: 1 / 1; max-width: 90vw;"></video>
             <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[350px] h-[350px] pointer-events-none">
-              <div class="corner-outline tl"></div>
-              <div class="corner-outline tr"></div>
-              <div class="corner-outline bl"></div>
-              <div class="corner-outline br"></div>
             </div>
+          </div>
+          <div v-if="buyerName" class="mt-4 text-center text-lg font-bold text-[#087E4C]">
+            Buyer anda adalah {{ buyerName }}
           </div>
         </div>
       </div>
@@ -53,6 +69,7 @@
 </template>
 
 <script lang="ts" setup>
+import { highlight } from '@nuxt/ui/runtime/utils/fuse.js';
 import { ref, onMounted, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -63,21 +80,28 @@ const router = useRouter();
 const companyName = ref('[Nama Perusahaan]');
 const showScanPopup = ref(false);
 const videoElem = ref<HTMLVideoElement | null>(null);
+const buyerName = ref<string | null>(null);
+const showBuyerSlide = ref(false);
 let qrScanner: any = null;
 
 const startScan = async () => {
   showScanPopup.value = true;
+  buyerName.value = null;
+  showBuyerSlide.value = false;
   await nextTick();
   if (!qrScanner && videoElem.value) {
     const { default: QrScanner } = await import('qr-scanner');
     qrScanner = new QrScanner(
       videoElem.value,
-      (result: any) => {
-        alert('QR ditemukan: ' + (result.data || result));
-        closeScanPopup();
+      async (result: any) => {
+        console.log('QR Code Scanned:', result.data || result);
+        await fetchStudentDetails(result.data);
+        // closeScanPopup();
       },
       {
-        onDecodeError: (error: any) => {}
+        onDecodeError: (error: any) => {},
+        highlightCodeOutline: true,
+        highlightScanRegion: true,
       }
     );
   }
@@ -132,6 +156,43 @@ onMounted(() => {
   fetchCompanyDetails();
 });
 
+const fetchStudentDetails = async (siswaId: string) => {
+  const token = localStorage.getItem('token');
+
+  if (!token || !siswaId) {
+    console.error('Token atau Siswa ID tidak ditemukan di localStorage.');
+    return;
+  }
+
+  const studentDetailEndpoint = `${base_url}/api/siswa/${siswaId}`;
+
+  try {
+    const response = await fetch(studentDetailEndpoint, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      buyerName.value = result.data.nama;
+      showBuyerSlide.value = true; // Tampilkan slide notifikasi
+    } else {
+      buyerName.value = null;
+      showBuyerSlide.value = false;
+    }
+  } catch (error) {
+    buyerName.value = null;
+    showBuyerSlide.value = false;
+  }
+};
+
+const closeBuyerSlide = () => {
+  showBuyerSlide.value = false;
+};
 const handleLogout = () => {
   console.log('Logout button clicked');
   localStorage.removeItem('token');
@@ -163,34 +224,26 @@ body, input, button, p, h2, h3, h4, h5, h6, span, div {
   transform: translateY(0);
   opacity: 1;
 }
-.corner-outline {
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  border: 0;
+.slide-down-enter-active, .slide-down-leave-active {
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
 }
-.corner-outline.tl {
-  top: 0; left: 0;
-  border-top: 5px solid #FFD600;
-  border-left: 5px solid #FFD600;
-  border-top-left-radius: 16px;
+.slide-down-enter-from, .slide-down-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
 }
-.corner-outline.tr {
-  top: 0; right: 0;
-  border-top: 5px solid #FFD600;
-  border-right: 5px solid #FFD600;
-  border-top-right-radius: 16px;
+.slide-down-enter-to, .slide-down-leave-from {
+  transform: translateY(0);
+  opacity: 1;
 }
-.corner-outline.bl {
-  bottom: 0; left: 0;
-  border-bottom: 5px solid #FFD600;
-  border-left: 5px solid #FFD600;
-  border-bottom-left-radius: 16px;
+.slide-right-top-enter-active, .slide-right-top-leave-active {
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s;
 }
-.corner-outline.br {
-  bottom: 0; right: 0;
-  border-bottom: 5px solid #FFD600;
-  border-right: 5px solid #FFD600;
-  border-bottom-right-radius: 16px;
+.slide-right-top-enter-from, .slide-right-top-leave-to {
+  transform: translateX(100%) scale(0.95);
+  opacity: 0;
+}
+.slide-right-top-enter-to, .slide-right-top-leave-from {
+  transform: translateX(0) scale(1);
+  opacity: 1;
 }
 </style>

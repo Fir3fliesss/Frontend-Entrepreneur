@@ -6,29 +6,21 @@ export default defineNuxtRouteMiddleware((to, from) => {
     userType = localStorage.getItem('userType');
   }
 
-  // protected routes
-  const publicPages = ['/', '/index', '/login-student', '/login-company'];
-  const authRequired = !publicPages.includes(to.path);
+  const dashboardPages = ['/student-dashboard', '/company-dashboard', '/admin-dashboard'];
+  const dashboardRequired = dashboardPages.includes(to.path);
 
-  if (authRequired && !token) {
+  if (dashboardRequired && !token) {
+    return navigateTo('/');
+  }
+
+  if (to.path === '/admin-dashboard' && userType !== 'admin') {
+    return navigateTo('/login-admin');
+  }
+  if (to.path === '/company-dashboard' && userType !== 'company') {
+    return navigateTo('/login-company');
+  }
+  if (to.path === '/student-dashboard' && userType !== 'student') {
     return navigateTo('/login-student');
   }
 
-  if (token && publicPages.includes(to.path)) {
-    if (userType === 'student') {
-      return navigateTo('/student-dashboard');
-    } else if (userType === 'company') {
-      return navigateTo('/company-dashboard');
-    } else {
-      if (process.client) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userType');
-      }
-      return navigateTo('/login-student');
-    }
-  }
-
-  if (token && authRequired) {
-    return;
-  }
 });
