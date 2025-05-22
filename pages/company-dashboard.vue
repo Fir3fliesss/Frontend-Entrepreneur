@@ -38,15 +38,18 @@
           <transition name="slide-right-top">
             <div
               v-if="showBuyerSlide"
-              class="fixed top-24 right-0 bg-[#FFF9F7] border-2 border-black rounded-xl px-6 py-3 flex flex-row items-center gap-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] z-50"
+              class="fixed top-24 right-0 bg-[#FFF9F7] border-2 border-black rounded-xl px-6 py-3 flex flex-col items-center shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] z-50"
               style="min-width: 220px;"
             >
-              <button @click="closeBuyerSlide" class="bg-red-300 hover:bg-red-400 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                ✕
-              </button>
-              <button @click="closeBuyerSlide" class="bg-green-200 hover:bg-green-300 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                ✓
-              </button>
+              <p class="text-lg font-bold text-[#087E4C] mb-2">Konfirmasi pembelian</p>
+              <div class="flex flex-row justify-around w-full gap-4">
+                <button @click="closeBuyerSlide" class="bg-red-300 hover:bg-red-400 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  ✕
+                </button>
+                <button @click="closeBuyerSlide" class="bg-green-200 hover:bg-green-300 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                  ✓
+                </button>
+              </div>
             </div>
           </transition>
           <button @click="closeScanPopup" class="absolute top-3 right-4 text-2xl font-bold text-gray-500 hover:text-black">&times;</button>
