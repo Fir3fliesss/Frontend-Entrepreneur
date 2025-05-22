@@ -74,24 +74,24 @@ const handleLogin = async () => {
 
     if (response.ok && data.data && data.data.company_id) {
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'company');
+      localStorage.setItem('userType', 'admin');
       localStorage.setItem('companyId', data.data.company_id);
-      router.push('/company-dashboard');
+      router.push('/admin-dashboard');
     } else if (response.ok && data.company && data.company.company_id) {
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'company');
+      localStorage.setItem('userType', 'admin');
       localStorage.setItem('companyId', data.company.company_id);
-      router.push('/company-dashboard');
+      router.push('/admin-dashboard');
     } else if (response.ok && data.data && data.data.id) {
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'company');
+      localStorage.setItem('userType', 'admin');
       localStorage.setItem('companyId', data.data.id);
-      router.push('/company-dashboard');
+      router.push('/admin-dashboard');
     } else if (response.ok && data.id) {
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'company');
+      localStorage.setItem('userType', 'admin');
       localStorage.setItem('companyId', data.id);
-      router.push('/company-dashboard');
+      router.push('/admin-dashboard');
     }
     else {
       console.error('Login successful, but company_id not found in response:', data);

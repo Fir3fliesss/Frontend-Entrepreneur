@@ -25,15 +25,16 @@
       <div class="mb-8">
         <h3 class="text-xl font-bold text-black mb-4">Stempel Terkumpul</h3>
         <div class="grid grid-cols-3 gap-4">
-          <div class="aspect-square bg-gray-200 border-2 border-black rounded-md flex items-center justify-center">
-            <span class="text-sm text-gray-600">Stamp</span>
-          </div>
-           <div class="aspect-square bg-gray-200 border-2 border-black rounded-md flex items-center justify-center">
-            <span class="text-sm text-gray-600">Stamp</span>
-          </div>
-           <div class="aspect-square bg-gray-200 border-2 border-black rounded-md flex items-center justify-center">
-            <span class="text-sm text-gray-600">Stamp</span>
-          </div>
+          <template v-if="stamps.length > 0">
+            <div v-for="(stamp, idx) in stamps" :key="idx" class="flex items-center justify-center">
+              <img :src="base_url + '/storage/' + stamp.company_stamp" alt="Stamp" class="w-16 h-16 object-cover rounded-full border-2 border-[#087E4C] shadow-md bg-white" />
+            </div>
+          </template>
+          <template v-else>
+            <div class="aspect-square bg-gray-200 border-2 border-black rounded-md flex items-center justify-center col-span-3">
+              <span class="text-sm text-gray-600">Belum ada stamp</span>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -50,7 +51,6 @@
 
     </div>
 
-    <!-- Popup QR Code -->
     <transition name="slide-up">
       <div v-if="showQrPopup" class="fixed inset-0 z-50 flex items-end justify-center bg-black/50">
         <div class="bg-white w-full max-w-sm rounded-t-2xl p-6 border-t-4 border-[#087E4C] shadow-lg animate-slideUp relative min-h-[70vh]">
@@ -75,6 +75,11 @@ const qrCode = ref('');
 const base_url = config.public.BASE_URL_API;
 
 const showQrPopup = ref(false);
+interface Stamp {
+  company_stamp: string;
+}
+
+const stamps = ref<Stamp[]>([]);
 
 const generateQR = async () => {
   const siswaId = localStorage.getItem('siswa_id') || '';
@@ -144,8 +149,31 @@ const fetchStudentDetails = async () => {
   }
 };
 
+const fetchStamps = async () => {
+  const token = localStorage.getItem('token');
+  const siswaId = localStorage.getItem('siswa_id');
+  if (!token || !siswaId) return;
+  try {
+    const response = await fetch(`${base_url}/api/stamp/${siswaId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+    const result = await response.json();
+    if (response.ok && result.success) {
+      stamps.value = result.data;
+    } else {
+      stamps.value = [];
+    }
+  } catch (e) {
+    stamps.value = [];
+  }
+};
+
 onMounted(() => {
   fetchStudentDetails();
+  fetchStamps();
 });
 
 const handleLogout = () => {
