@@ -3,7 +3,7 @@
 
     <button
       @click="logout"
-      class="fixed top-4 right-4 bg-[#FF6B6B] text-white font-bold py-2 px-4 rounded-md border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all z-10"
+      class="fixed top-4 right-4 bg-[#FF6B6B] text-white font-bold py-2 px-4 rounded-md border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all z-10 hover:shadow-none active:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
     >
       Logout
     </button>
@@ -79,10 +79,10 @@ const fetchCompanies = async () => {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await response.json();
-    if (data.success && Array.isArray(data.data)) {
-      companies.value = data.data.map((company: any) => ({
+    if (data.success && Array.isArray(data.data)) { // Kode ini mengharapkan data.data adalah array
+      companies.value = data.data.map((company: any) => ({ // Kemudian melakukan map pada array tersebut
         ...company,
-        status: !!company.status
+        status: !!company.status // Mengambil status dari setiap objek di array
       }));
     } else {
       companies.value = [];

@@ -31,7 +31,7 @@
 
       <div class="mb-8">
         <button
-          class="bg-[#98FFCF] hover:bg-green-400 text-black font-bold border-2 border-black rounded-lg py-3 px-6 text-lg w-full transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none hover:translate-x-[3px] hover:translate-y-[3px]"
+          class="bg-[#98FFCF] hover:bg-green-400 text-black font-bold border-2 border-black rounded-lg py-3 px-6 text-lg w-full transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-none active:shadow-none active:translate-x-[3px] active:translate-y-[3px] hover:translate-x-[3px] hover:translate-y-[3px]"
           @click="handleLogin"
         >
           Sign In
