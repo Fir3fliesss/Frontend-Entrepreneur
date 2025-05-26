@@ -46,7 +46,7 @@
                 <button @click="closeBuyerSlide" class="bg-red-300 hover:bg-red-400 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                   ✕
                 </button>
-                <button @click="closeBuyerSlide" class="bg-green-200 hover:bg-green-300 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                <button @click="sendStampToStudent" class="bg-green-200 hover:bg-green-300 border-2 border-black rounded-lg w-12 h-12 flex items-center justify-center text-3xl font-bold shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                   ✓
                 </button>
               </div>
@@ -156,6 +156,8 @@ onMounted(() => {
   fetchCompanyDetails();
 });
 
+const scannedSiswaId = ref<string | null>(null);
+
 const fetchStudentDetails = async (siswaId: string) => {
   const token = localStorage.getItem('token');
 
@@ -179,9 +181,11 @@ const fetchStudentDetails = async (siswaId: string) => {
 
     if (response.ok && result.success) {
       buyerName.value = result.data.nama;
-      showBuyerSlide.value = true; // Tampilkan slide notifikasi
+      scannedSiswaId.value = siswaId;
+      showBuyerSlide.value = true;
     } else {
       buyerName.value = null;
+      scannedSiswaId.value = null;
       showBuyerSlide.value = false;
     }
   } catch (error) {
@@ -199,6 +203,32 @@ const handleLogout = () => {
   localStorage.removeItem('userType');
   localStorage.removeItem('companyId');
   router.push('/');
+};
+
+const sendStampToStudent = async () => {
+  const token = localStorage.getItem('token');
+  if (!token || !scannedSiswaId.value) {
+    alert('Token atau Siswa ID tidak ditemukan.');
+    return;
+  }
+  try {
+    const response = await fetch(`${base_url}/api/send/${scannedSiswaId.value}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+    const result = await response.json();
+    if (response.ok) {
+      alert(result.message || 'Stamp berhasil dikirim!');
+    } else {
+      alert('Gagal mengirim stamp: ' + (result.message || 'Unknown error'));
+    }
+  } catch (error) {
+    alert('Terjadi error saat mengirim stamp.');
+  }
+  showBuyerSlide.value = false;
 };
 </script>
 
