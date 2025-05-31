@@ -76,7 +76,7 @@ const handleRegister = async () => {
       body: formData
     });
     const data = await response.json();
-    console.log('Response:', data); // Tambahkan ini
+    console.log('Response:', data);
     if (response.ok && data.status === true) {
       alert('Registrasi berhasil! Silakan login.');
       router.push('/login-company');
@@ -85,7 +85,7 @@ const handleRegister = async () => {
     }
   } catch (error) {
     alert('Terjadi kesalahan saat registrasi.');
-    console.error(error); // Tambahkan ini
+    console.error(error);
   }
 };
 </script>
