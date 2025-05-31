@@ -14,7 +14,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      BASE_URL_API: process.env.BASE_URL_API
+      BASE_URL_API: process.env.NUXT_PUBLIC_API_BASE || 'https://preneur-be.synchronizeteams.my.id'
     }
   }
 })

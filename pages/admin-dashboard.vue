@@ -73,16 +73,30 @@ const statusFilter = ref('all'); 'all'
 const router = useRouter();
 
 const fetchCompanies = async () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    console.error('Token tidak ditemukan di localStorage');
+    router.push('/login-admin');
+    return;
+  }
+
   try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${base_url}/api/admin/companies`, {
+    const { data, error } = await useFetch(`${base_url}/api/admin/companies`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    const data = await response.json();
-    if (data.success && Array.isArray(data.data)) { // Kode ini mengharapkan data.data adalah array
-      companies.value = data.data.map((company: any) => ({ // Kemudian melakukan map pada array tersebut
+
+    if (error.value) {
+      console.error('Fetch error:', error.value);
+      alert('Failed to fetch companies');
+      companies.value = [];
+      return;
+    }
+
+    const result = data.value as any;
+    if (result && result.success && Array.isArray(result.data)) {
+      companies.value = result.data.map((company: any) => ({
         ...company,
-        status: !!company.status // Mengambil status dari setiap objek di array
+        status: !!company.status
       }));
     } else {
       companies.value = [];
@@ -96,14 +110,26 @@ const fetchCompanies = async () => {
 const toggleStatus = async (company: Company) => {
   const token = localStorage.getItem('token');
   const newStatus = !company.status;
+  if (!token) {
+    alert('Token tidak ditemukan.');
+    return;
+  }
+
   try {
-    const response = await fetch(`${base_url}/api/admin/status/${company.company_id}/${newStatus}`, {
+    const { data, error } = await useFetch(`${base_url}/api/admin/status/${company.company_id}/${newStatus}`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` }
     });
-    const data = await response.json();
-    if (typeof data.status === 'boolean') {
-      company.status = data.status;
+
+    if (error.value) {
+      console.error('Toggle status error:', error.value);
+      alert('Terjadi kesalahan saat mengubah status');
+      return;
+    }
+
+    const result = data.value as any;
+    if (result && typeof result.status === 'boolean') {
+      company.status = result.status;
     } else {
       alert('Gagal mengubah status perusahaan');
     }
