@@ -12,7 +12,7 @@
           type="text"
           placeholder="Masukkan Username"
           class="w-full px-4 py-3 text-base border-2 border-black rounded-md focus:outline-none focus:border-green-500 placeholder-gray-500"
-          v-model="name_company"
+          v-model="name"
         />
       </div>
 
@@ -49,20 +49,20 @@ const config = useRuntimeConfig();
 const router = useRouter();
 
 const base_url = config.public.BASE_URL_API;
-const name_company = ref('');
+const name = ref('');
 const password = ref('');
 
 const handleLogin = async () => {
-  if (!name_company.value || !password.value) {
+  if (!name.value || !password.value) {
     alert('Nama Perusahaan dan Password tidak boleh kosong.');
     return;
   }
 
-  const loginEndpoint = `${base_url}/api/company/login`;
-  const requestBody = { name_company: name_company.value, password: password.value };
+  const loginEndpoint = `${base_url}/api/admin/login`;
+  const requestBody = { name: name.value, password: password.value };
 
   try {
-    const response = await fetch(loginEndpoint, {
+    const { data, error } = await useFetch(loginEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,37 +70,20 @@ const handleLogin = async () => {
       body: JSON.stringify(requestBody),
     });
 
-    const data = await response.json();
-
-    if (response.ok && data.data && data.data.company_id) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'admin');
-      localStorage.setItem('companyId', data.data.company_id);
-      router.push('/admin-dashboard');
-    } else if (response.ok && data.company && data.company.company_id) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'admin');
-      localStorage.setItem('companyId', data.company.company_id);
-      router.push('/admin-dashboard');
-    } else if (response.ok && data.data && data.data.id) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'admin');
-      localStorage.setItem('companyId', data.data.id);
-      router.push('/admin-dashboard');
-    } else if (response.ok && data.id) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('userType', 'admin');
-      localStorage.setItem('companyId', data.id);
-      router.push('/admin-dashboard');
+    if (error.value) {
+      alert(`Login gagal: ${error.value.data?.message || 'Nama/Password salah, silahkan coba lagi'}`);
+      return;
     }
-    else {
-      console.error('Login successful, but company_id not found in response:', data);
-      alert('Login berhasil, tetapi data perusahaan tidak lengkap. Silakan hubungi administrator.');
-      console.error('Login failed:', data.message);
-      alert(`Login gagal: ${data.message || 'Nama Perusahaan/Password salah, silahkan coba lagi'}`);
+
+    const responseData = data.value;
+    if (responseData && responseData.status && responseData.token) {
+      localStorage.setItem('token', responseData.token);
+      localStorage.setItem('userType', 'admin');
+      router.push('/admin-dashboard');
+    } else {
+      alert('Login gagal: Data tidak lengkap.');
     }
   } catch (error) {
-    console.error('An error occurred during login', error);
     alert('Terjadi kesalahan saat login.');
   }
 };

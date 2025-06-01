@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "8e3d22c2-2f1b-4541-a917-8793bad7fe66",
 		"name": "Entrepreneur",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "36749478"
 	},
 	"item": [
@@ -29,7 +29,16 @@
 								}
 							]
 						},
-						"url": "{{BASE_URL}}/api/register"
+						"url": {
+							"raw": "{{BASE_URL}}/api/register",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
 					},
 					"response": []
 				},
@@ -38,7 +47,16 @@
 					"request": {
 						"method": "POST",
 						"header": [],
-						"url": "{{BASE_URL}}/api/login"
+						"url": {
+							"raw": "{{BASE_URL}}/api/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
 					},
 					"response": []
 				},
@@ -78,7 +96,17 @@
 								}
 							]
 						},
-						"url": "{{BASE_URL}}/api/company/register"
+						"url": {
+							"raw": "{{BASE_URL}}/api/company/register",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"company",
+								"register"
+							]
+						}
 					},
 					"response": []
 				},
@@ -118,7 +146,17 @@
 								}
 							]
 						},
-						"url": "{{BASE_URL}}/api/company/register"
+						"url": {
+							"raw": "{{BASE_URL}}/api/company/register",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"company",
+								"register"
+							]
+						}
 					},
 					"response": []
 				},
@@ -132,6 +170,14 @@
 				},
 				{
 					"name": "GET Detail Company",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin",
 					"request": {
 						"method": "GET",
 						"header": []
@@ -153,9 +199,13 @@
 					"request": {
 						"auth": {
 							"type": "bearer",
-							"bearer": {
-								"token": "{{COMPANY_TOKEN}}"
-							}
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{COMPANY_TOKEN}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -165,7 +215,17 @@
 								"type": "text"
 							}
 						],
-						"url": "{{BASE_URL}}/api/send/{{SISWA_ID}}"
+						"url": {
+							"raw": "{{BASE_URL}}/api/send/{{SISWA_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"send",
+								"{{SISWA_ID}}"
+							]
+						}
 					},
 					"response": []
 				},
@@ -191,7 +251,7 @@
 					"response": []
 				},
 				{
-					"name": "New Request",
+					"name": "GET All Companies",
 					"request": {
 						"method": "GET",
 						"header": []
